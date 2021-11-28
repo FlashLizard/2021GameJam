@@ -5,11 +5,11 @@ using UnityEngine;
 public class MoveUI : MonoBehaviour//可移动ui（头顶UI）父类
 {
     protected float m_height=0.5f;//距离玩家偏移量
-    public PlayerControl pc;//玩家
+    public PlayerController pc;//玩家
     public static GameObject Generate(Data.UIId id,GameObject player)//生成一个MoveUI
     {
         MoveUI newUI = Data.Generate("UIs/"+Data.uIIdToString[id],player).GetComponent<MoveUI>();
-        newUI.pc = player.GetComponent<PlayerControl>();
+        newUI.pc = player.GetComponent<PlayerController>();
         return newUI.gameObject;
     }
     public void Start()

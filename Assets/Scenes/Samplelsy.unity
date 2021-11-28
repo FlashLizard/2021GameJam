@@ -156,16 +156,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f5306c702881e74aa1144b681edbe90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gifts: 0
+  hp: 0
+  hardSnowballNum: 0
+  softSnowballNum: 0
+  moveSpeed: 0
+  throwCD: 0
+  snowballList: []
+  iceBlock: {fileID: 0}
+  track: {fileID: 0}
+  giftNum: 0
   iced: 0
   team: 0
-  m_melee: {x: 0, y: 0, z: 0}
-  m_makeUI: {fileID: 0}
-  speed: 5
-  iceForce: 300
-  iceFriction: 400
-  maxSpeed: 10
-  pushSmooth: 7
+  m_speed: 5
+  m_iceForce: 300
+  m_iceFriction: 400
+  m_maxSpeed: 10
+  m_pushSmooth: 7
+  m_meleeR: 1
+  m_mass: 1000
 --- !u!212 &47442369
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -772,16 +780,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f2537731c6aa804795bccf9d0b2349e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gifts: 0
+  hp: 0
+  hardSnowballNum: 0
+  softSnowballNum: 0
+  moveSpeed: 0
+  throwCD: 0
+  snowballList: []
+  iceBlock: {fileID: 0}
+  track: {fileID: 0}
+  giftNum: 0
   iced: 0
   team: 0
-  m_melee: {x: 0, y: 0, z: 0}
-  m_makeUI: {fileID: 0}
-  speed: 10
-  iceForce: 10
-  iceFriction: 0.1
-  maxSpeed: 15
-  pushSmooth: 60
+  m_speed: 5
+  m_iceForce: 300
+  m_iceFriction: 400
+  m_maxSpeed: 10
+  m_pushSmooth: 7
+  m_meleeR: 1
+  m_mass: 1000
 --- !u!212 &2058781742
 SpriteRenderer:
   m_ObjectHideFlags: 0

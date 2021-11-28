@@ -21,8 +21,8 @@ public class Gift : MonoBehaviour
     {
         if (collision.gameObject.tag == Data.tagIdToString[Data.TagId.player])
         {
-            if (!m_pickable|| collision.transform.GetComponent<PlayerControl>().giftNum>0) return;//如果不可捡或玩家已得礼物
-            collision.transform.GetComponent<PlayerControl>().GetGift();
+            if (!m_pickable|| collision.transform.GetComponent<PlayerController>().giftNum>0) return;//如果不可捡或玩家已得礼物
+            collision.transform.GetComponent<PlayerController>().GetGift();
             Destroy(gameObject);
         }
     }

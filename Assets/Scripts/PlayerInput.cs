@@ -12,4 +12,7 @@ public class PlayerInput : MonoBehaviour
     public string fireAxis;
     public KeyCode layIceBlock;
     public KeyCode switchIceBlock;
+    public KeyCode makeSnowBall;
+    public KeyCode putGift;
+    public KeyCode melee;
 }

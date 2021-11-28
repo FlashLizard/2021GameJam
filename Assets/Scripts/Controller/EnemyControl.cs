@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyControl : PlayerControl
+public class EnemyControl : PlayerController
 {
     private void Start()
     {
@@ -25,6 +25,18 @@ public class EnemyControl : PlayerControl
         get => 0;
     }
     public override bool putGiftUp
+    {
+        get => false;
+    }
+    public override bool fire
+    {
+        get => false;
+    }
+    public override bool putIce
+    {
+        get => false;
+    }
+    public override bool switchBall
     {
         get => false;
     }

@@ -8,14 +8,14 @@ public class Ice : MonoBehaviour
     {
         if (collision.gameObject.tag == Data.tagIdToString[Data.TagId.player])
         {
-            collision.transform.GetComponent<PlayerControl>().iced = true;
+            collision.transform.GetComponent<PlayerController>().iced = true;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.tag == Data.tagIdToString[Data.TagId.player])
         {
-            collision.gameObject.GetComponent<PlayerControl>().iced = false;
+            collision.gameObject.GetComponent<PlayerController>().iced = false;
         }
     }
 }
