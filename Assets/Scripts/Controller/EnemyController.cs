@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyControl : PlayerController
+public class EnemyController : PlayerController
 {
-    private void Start()
+    public override void StartInit()
     {
-        team = 1;//设置为和玩家不同队伍
+        //base.StartInit();
+        team = 1;
     }
     public override bool makeDown
     {
@@ -37,6 +38,14 @@ public class EnemyControl : PlayerController
         get => false;
     }
     public override bool switchBall
+    {
+        get => false;
+    }
+    public override Vector3 attackDirection
+    {
+        get => new Vector3(0, 1);
+    }
+    public override bool meleeDown
     {
         get => false;
     }

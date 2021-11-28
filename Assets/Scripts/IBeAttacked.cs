@@ -4,5 +4,5 @@
 
 public interface IBeAttacked
 {
-    public abstract void BeAttacked(float damage);
+    public abstract void BeAttacked(int damage);
 }

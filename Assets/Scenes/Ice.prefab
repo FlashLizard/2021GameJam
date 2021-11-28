@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2390989544396934580}
   - component: {fileID: 2390989544396934581}
   - component: {fileID: 2390989544396934577}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ice
   m_TagString: Ice
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2390989544396934586}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.8728, y: 2.0749, z: 0}
-  m_LocalScale: {x: 12.163481, y: 5.0328736, z: 1}
+  m_LocalScale: {x: 20, y: 15, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -74,8 +74,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  m_Color: {r: 0.47547168, g: 0.57604074, b: 1, a: 1}
+  m_Sprite: {fileID: 8177471321811730583, guid: 87aaca0a643d54397ba969dab4fc8875, type: 3}
+  m_Color: {r: 0.43001068, g: 0.5186399, b: 0.8867924, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -184,3 +184,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec1b925d76280a4fb49f4bffac380cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  team: -1

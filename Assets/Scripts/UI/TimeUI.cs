@@ -19,7 +19,7 @@ public class TimeUI : MonoBehaviour//”Œœ∑µπº∆ ±UI
         }
         catch
         {
-            m_time = 5 * 60;
+            m_time = 30;
         }
         Invoke("MinusTime", 1f);
     }

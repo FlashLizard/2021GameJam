@@ -33,6 +33,7 @@ public static class Data
         makeMove,//制作条ui
         end
     }
+    public static int hp = 7, hardSnowBallNum = 4, softSnowBallNum = 3;
     public static Dictionary<TagId, string> tagIdToString = new Dictionary<TagId, string>//string与游戏中tag相同
     {
         {TagId.player,"Player" },
@@ -89,5 +90,10 @@ public static class Data
         child.transform.SetParent(parent.transform);
         child.transform.position = parent.transform.position;
         return child;
+    }
+    public static void ClearChildren(GameObject parent)
+    {
+        for (int i = 0; i < parent.transform.childCount; i++)
+            MonoBehaviour.Destroy(parent.transform.GetChild(i).gameObject);
     }
 }

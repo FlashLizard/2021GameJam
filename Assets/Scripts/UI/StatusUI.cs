@@ -1,21 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StatusUI : MonoBehaviour
 {
     [SerializeField]
     private GameObject m_health, m_bullets;//血量与雪球条
+    [SerializeField]
+    private Color m_color;
     private int m_healthBegin=-1, m_hardBulletBegin=-1, m_softBulletBegin=-1;//先放置硬雪球，后放置软雪球
-    private void Start()
+    public void Recover()
     {
-        SetHealth(7);
-        SetHardBullet(4);
-        SetSoftBullet(3);
+        Data.ClearChildren(m_health);
+        Data.ClearChildren(m_bullets);
+        m_healthBegin = m_hardBulletBegin = m_softBulletBegin = -1;
+        GetComponent<Image>().color = m_color;
+    }
+    public void GetToGrey()
+    {
+        GetComponent<Image>().color = Color.grey;
     }
     public void SetHealth(int num)
     {
-        ChangeHealth(num - m_hardBulletBegin - 1);
+        ChangeHealth(num - m_healthBegin - 1);
     }
     public void SetHardBullet(int num)
     {

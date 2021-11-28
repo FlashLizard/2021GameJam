@@ -1571,17 +1571,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f2537731c6aa804795bccf9d0b2349e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 0
-  hardSnowballNum: 0
-  softSnowballNum: 0
-  moveSpeed: 0
-  throwCD: 0
-  snowballList: []
-  iceBlock: {fileID: 0}
-  track: {fileID: 0}
+  hp: 100
+  hardSnowballNum: 5
+  softSnowballNum: 3
+  moveSpeed: 10
+  throwCD: 0.5
+  snowballList:
+  - {fileID: 1473705241330752850, guid: 49e4c42ef6d2db44cad6bc30c40dd37f, type: 3}
+  - {fileID: 1818967556853892247, guid: b3dcd9c1d6b218840b29df9fe8fbe5e0, type: 3}
+  iceBlock: {fileID: 2363596191489642473, guid: 57a21b05440361e4aae029f2ff126aa9, type: 3}
+  track: {fileID: 1260843154}
   giftNum: 0
   iced: 0
-  team: 0
+  team: 1
   m_speed: 5
   m_iceForce: 300
   m_iceFriction: 400

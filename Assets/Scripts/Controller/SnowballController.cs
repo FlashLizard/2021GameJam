@@ -5,7 +5,8 @@ using UnityEngine;
 public class SnowballController : MonoBehaviour
 {
     [Header("属性")]
-    public float attackDamage;      // 攻击伤害
+    public int team;
+    public int attackDamage;      // 攻击伤害
     public float shotSpeed;         // 抛出速度
     public float g;                 // 重力加速度
     public float throwDistance;     // 投掷距离
@@ -44,10 +45,16 @@ public class SnowballController : MonoBehaviour
                 DestroySelf();
             }
         }
+        else if(collider2D.GetComponent<PlayerController>().team!=team)
+        {
+            collider2D.GetComponent<IBeAttacked>().BeAttacked(attackDamage);
+            DestroySelf();
+        }
     }
 
-    public void Shoot()
+    public void Shoot(int fromTeam)
     {
+        int team = fromTeam;
         passTime = 0f;
         Invoke("DestroySelf", time);
     }

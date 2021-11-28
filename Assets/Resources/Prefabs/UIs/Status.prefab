@@ -470,6 +470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_health: {fileID: 8177760358320428309}
   m_bullets: {fileID: 8177760358572476467}
+  m_color: {r: 0.45678177, g: 0.8584906, b: 0.8584906, a: 1}
 --- !u!1 &8177760357926019898
 GameObject:
   m_ObjectHideFlags: 0

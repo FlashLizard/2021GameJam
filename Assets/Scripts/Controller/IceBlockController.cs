@@ -5,7 +5,7 @@ using UnityEngine;
 public class IceBlockController : MonoBehaviour, IBeAttacked
 {
     [Header("属性")]
-    public float hp;
+    public int hp;
 
     // 组件
     private Collider2D coll;
@@ -30,7 +30,7 @@ public class IceBlockController : MonoBehaviour, IBeAttacked
     /// <summary>
     /// 被攻击接口
     /// </summary>
-    public void BeAttacked(float damage)
+    public void BeAttacked(int damage)
     {
         hp -= damage;
         if(hp <= 0)

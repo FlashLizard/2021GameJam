@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IBeAttacked
 {
+    [SerializeField]
+    public static GameObject players;
     [Header("属性")]
-    public float hp;                        // 血量
-    public int hardSnowballNum;             // 硬雪球数量
-    public int softSnowballNum;             // 软雪球数量
+    [SerializeField]
+    private int m_hp,m_hardSnowballNum, m_softSnowballNum;             // 软雪球数量
     public float moveSpeed;                 // 移动速度
     public float throwCD;                   // 扔雪球CD
     public List<GameObject> snowballList;      // 雪球列表
@@ -27,8 +28,10 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     private PlayerInput pi;
     private Animator m_anim;
     public int giftNum = 0;
-    public bool iced = false;           //是否在ice上
-    public int team = 0;                //属于哪队
+    public Ice iced = null;           //是否在ice上
+    [SerializeField]
+    public int team = 0,playerId=0;                //属于哪队
+    private StatusUI m_statusUI;
     private MakeMoveUI m_makeUI;        //制作雪球UI
     private GiftMoveUI m_giftUI;        //礼物UI
     private HealthMoveUI m_healthMoveUI;//血量UI
@@ -70,13 +73,13 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         {
             for (int i = -75; i <= 75; i += 15)//150张角范围
             {
-                Debug.Log(attackDirection.normalized);
                 RaycastHit2D[] raycastHit2Ds =
                     Physics2D.RaycastAll(transform.position, Quaternion.AngleAxis(i, new Vector3(0, 0, 1)) * attackDirection.normalized, m_meleeR, LayerMask.GetMask("Player"));
 
 
                 foreach (var it in raycastHit2Ds)
                 {
+                    Debug.Log(team+" "+ it.collider.GetComponent<PlayerController>().team);
                     if (it.collider && it.collider.GetComponent<PlayerController>().team != team)
                     {
                         return it.collider.gameObject;
@@ -107,6 +110,36 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     {
         get => Input.GetKeyDown(pi.switchIceBlock);
     }
+    public int hp
+    {
+        get
+        {
+            m_hp = m_hp > Data.hp ? Data.hp : m_hp;
+            m_hp = m_hp < 0 ? 0 : m_hp;
+            return m_hp;
+        }
+        set { m_hp = value; }
+    }
+    public int softSnowballNum
+    {
+        get
+        {
+            m_softSnowballNum = m_softSnowballNum > Data.softSnowBallNum ? Data.softSnowBallNum : m_softSnowballNum;
+            m_softSnowballNum = m_softSnowballNum < 0 ? 0 : m_softSnowballNum;
+            return m_softSnowballNum;
+        }
+        set { m_softSnowballNum = value; }
+    }
+    public int hardSnowballNum
+    {
+        get
+        {
+            m_hardSnowballNum = m_hardSnowballNum > Data.hardSnowBallNum ? Data.hardSnowBallNum : m_hardSnowballNum;
+            m_hardSnowballNum = m_hardSnowballNum < 0 ? 0 : m_hardSnowballNum;
+            return m_hardSnowballNum;
+        }
+        set { m_hardSnowballNum = value; }
+    }
 
     void Awake()
     {
@@ -116,19 +149,34 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         rb = GetComponent<Rigidbody2D>();
         rb.mass = m_mass;
         tc = track.GetComponent<TrajectoryController>();
-        pi = GetComponent<PlayerInput>();
+        try
+        {
+            pi = GetComponent<PlayerInput>();
+        }
+        catch { pi = null; }
     }
-
+    public virtual void StartInit()
+    {
+        m_statusUI = StatusControlUI.current.statusUIs[playerId];
+    }
+    void Start()
+    {
+        StartInit();
+        Reset();
+    }
+    void Reset()
+    {
+        if (team == 0) m_statusUI.Recover();
+        transform.position = MapController.current.positions[team*2+playerId].transform.position;
+        SetHealth(Data.hp);
+        SetHardSnowBall(Data.hardSnowBallNum);
+        SetSoftSnowBall(Data.softSnowBallNum);
+    }
     void Update()
     {
         // 手柄左摇杆移动
-        //m_moveDirection.x = Input.GetAxisRaw(pi.horizontalAxis);
-        //m_moveDirection.y = Input.GetAxisRaw(pi.verticalAxis);
-
         // 手柄右摇杆控制投掷方向
-        m_throwDirection.x = Input.GetAxisRaw(pi.mouseXAxis);
-        m_throwDirection.y = Input.GetAxisRaw(pi.mouseYAxis);
-        m_throwDirection = SquareToCicle(m_throwDirection);
+        m_throwDirection = SquareToCicle(attackDirection);
 
         var maxDistance = snowballList[whichSnowball].GetComponent<SnowballController>().throwDistance;
         m_attackPoint = transform.position - maxDistance * m_throwDirection;
@@ -150,7 +198,9 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         }
         if (meleeDown)
         {
+            
             GameObject enemy = isEnemyNear;
+            Debug.Log(enemy);
             if (enemy)
             {
                 Vector3 direction = (enemy.transform.position - transform.position).normalized;//推动方向
@@ -170,7 +220,7 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         {
             tc.ClearTrack();    // 清除轨迹
         }
-        if (fire && preparedToThrow && Time.time - m_throwTimeStamp > throwCD)   // 按RT发射雪球
+        if (fire && preparedToThrow && Time.time - m_throwTimeStamp > throwCD && giftNum==0)   // 按RT发射雪球
         {
             throwSnowBall();
             m_throwTimeStamp = Time.time;
@@ -185,7 +235,14 @@ public class PlayerController : MonoBehaviour, IBeAttacked
             whichSnowball = 1 - whichSnowball;
             tc.snowballObj = snowballList[whichSnowball];
         }
-
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            ChangeHealth(1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            ChangeHealth(-1);
+        }
     }
     public void BeginMake()
     {
@@ -224,23 +281,15 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     {
         if (giftNum > 0)
         {
-            Gift.Generate(transform.position);
+            Gift newGift=Gift.Generate(transform.position);
+            if (iced) newGift.team = iced.team;
             giftNum--;
             Destroy(m_giftUI.gameObject);
         }
     }
-    //void FixedUpdate()
-    //{
-    //    if(!iced) rb.MovePosition(rb.position + SquareToCicle(m_moveDirection) * moveSpeed * Time.fixedDeltaTime);
-    //    else
-    //    {
-
-    //    }
-    //}
     private void Move()
     {
         Vector2 direction = new Vector2(vx, vy);//方向
-        Debug.Log(direction);
         if (direction.magnitude > 0.1f)
         {
             direction = direction.normalized;
@@ -265,16 +314,61 @@ public class PlayerController : MonoBehaviour, IBeAttacked
             }
         }
     }
+    private void SetHardSnowBall(int num)
+    {
+        hardSnowballNum = num;
+        if (team == 0) m_statusUI.SetHardBullet(num);
+    }
+    private void SetSoftSnowBall(int num)
+    {
+        softSnowballNum = num;
+        if (team == 0) m_statusUI.SetSoftBullet(num);
+    }
+    private void SetHealth(int num)
+    {
+        hp = num;
+        m_healthMoveUI.Set(num);
+        if (team == 0) m_statusUI.SetHealth(num);
+    }
+    private void ChangeHardSnowBall(int num)
+    {
+        hardSnowballNum += num;
+        if(team==0) m_statusUI.SetHardBullet(hardSnowballNum);
+    }
+    private void ChangeSoftSnowBall(int num)
+    {
+        softSnowballNum += num;
+        if(team==0) m_statusUI.SetSoftBullet(softSnowballNum);
+    }
+    private void ChangeHealth(int num)
+    {
+        hp += num;
+        m_healthMoveUI.Set(hp);
+        if(team==0) m_statusUI.SetHealth(hp);
+        if (hp <= 0)
+        {
+            AddEnemyScore(15);
+            GiftFall();
+            gameObject.SetActive(false);
+            if (team == 0)
+            {
+                m_statusUI.GetToGrey();
+            }
+            Invoke("Recover", 5f);
+        }
+    }
     //移动
     public void MakeFinished()                                              //完成制作
     {
         CancelMake();
+        if (hardSnowballNum + softSnowballNum >= 7) return;
         if (whichSnowball == 0)
         {
-            //hard++
+            ChangeHardSnowBall(1);
         }
         else
         {
+            ChangeSoftSnowBall(1);
             //soft++
         }
     }
@@ -295,13 +389,13 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     public void throwSnowBall()
     {
         if (whichSnowball == 0 && hardSnowballNum > 0)
-            hardSnowballNum--;
+            ChangeHardSnowBall(-1);
         else if (whichSnowball == 1 && softSnowballNum > 0)
-            softSnowballNum--;
+            ChangeSoftSnowBall(-1);
         else return;
         GameObject obj = Instantiate(snowballList[whichSnowball], transform.position, Quaternion.identity);
         obj.GetComponent<SnowballController>().SetAttackPoint(m_attackPoint);
-        obj.GetComponent<SnowballController>().Shoot();
+        obj.GetComponent<SnowballController>().Shoot(team);
     }
 
 
@@ -328,12 +422,30 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     /// <summary>
     /// 被攻击接口
     /// </summary>
-    public void BeAttacked(float damage) 
+    public void BeAttacked(int damage) 
     {
-        hp -= damage;
-        if(hp <= 0)
+        AddEnemyScore(3);
+        ChangeHealth(-damage);
+    }
+    public void Recover()
+    {
+        GameObject newPlayer = team==0? Data.Generate("Player",players):Data.Generate("Enemy",players);
+        newPlayer.GetComponent<PlayerController>().playerId = playerId;
+        Destroy(gameObject);
+    }
+    public void AddEnemyScore(int num)
+    {
+        ScoreControlUI.current.scoreUIs[team ^ 1].ChangeScore(num);
+    }
+    public static void EndScore()//结算分数
+    {
+        for(int i=0;i<players.transform.childCount;i++)
         {
-            Destroy(gameObject);
+            PlayerController player = players.transform.GetChild(i).gameObject.GetComponent<PlayerController>();
+            if(player.giftNum>0)
+            {
+                ScoreControlUI.current.scoreUIs[player.team].ChangeScore(30);
+            }
         }
     }
 }

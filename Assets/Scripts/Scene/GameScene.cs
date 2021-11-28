@@ -18,6 +18,8 @@ public class GameScene : Scene
     public override void Exit()
     {
         base.Exit();
+        Gift.EndScore();
+        PlayerController.EndScore();
         List<int> temp=new List<int>();
         foreach(var i in ScoreControlUI.current.scoreUIs)
         {
