@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour, IBeAttacked
 {
+    public float meleeCD;                   // 近战CD                 @
+    private float m_meleeTimeStamp;          // 近战CD计时          @
     [SerializeField]
     public static GameObject players;
     [Header("属性")]
@@ -30,7 +33,7 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     public int giftNum = 0;
     public Ice iced = null;           //是否在ice上
     [SerializeField]
-    public int team = 0,playerId=0;                //属于哪队
+    public int team,playerId;                //属于哪队
     private StatusUI m_statusUI;
     private MakeMoveUI m_makeUI;        //制作雪球UI
     private GiftMoveUI m_giftUI;        //礼物UI
@@ -65,7 +68,7 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     }
     public virtual bool meleeDown           //是否按下近战
     {
-        get => Input.GetKeyDown(pi.melee);
+        get => Input.GetAxisRaw(pi.fireAxis) == -1;                         //@
     }
     public GameObject isEnemyNear           //敌人是否在近战范围
     {
@@ -98,9 +101,10 @@ public class PlayerController : MonoBehaviour, IBeAttacked
             Gizmos.DrawRay(ray);
         }
     }
+
     public virtual bool fire
     {
-        get => Input.GetAxisRaw(pi.fireAxis)!=0;
+        get => Input.GetAxisRaw(pi.fireAxis) == 1;      //@
     }
     public virtual bool putIce
     {
@@ -124,8 +128,8 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     {
         get
         {
-            m_softSnowballNum = m_softSnowballNum > Data.softSnowBallNum ? Data.softSnowBallNum : m_softSnowballNum;
-            m_softSnowballNum = m_softSnowballNum < 0 ? 0 : m_softSnowballNum;
+            //m_softSnowballNum = m_softSnowballNum+m_hardSnowballNum > Data.softSnowBallNum+Data.hardSnowBallNum ? Data.softSnowBallNum : m_softSnowballNum;
+            //m_softSnowballNum = m_softSnowballNum < 0 ? 0 : m_softSnowballNum;
             return m_softSnowballNum;
         }
         set { m_softSnowballNum = value; }
@@ -134,8 +138,8 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     {
         get
         {
-            m_hardSnowballNum = m_hardSnowballNum > Data.hardSnowBallNum ? Data.hardSnowBallNum : m_hardSnowballNum;
-            m_hardSnowballNum = m_hardSnowballNum < 0 ? 0 : m_hardSnowballNum;
+            //m_hardSnowballNum = m_hardSnowballNum > Data.hardSnowBallNum ? Data.hardSnowBallNum : m_hardSnowballNum;
+            //m_hardSnowballNum = m_hardSnowballNum < 0 ? 0 : m_hardSnowballNum;
             return m_hardSnowballNum;
         }
         set { m_hardSnowballNum = value; }
@@ -143,6 +147,7 @@ public class PlayerController : MonoBehaviour, IBeAttacked
 
     void Awake()
     {
+        if (!players) players = GameObject.Find("Players");
         whichSnowball = 0;
         m_anim = GetComponent<Animator>();
         m_healthMoveUI = HealthMoveUI.Generate(gameObject);//添加血量UI
@@ -157,7 +162,7 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     }
     public virtual void StartInit()
     {
-        m_statusUI = StatusControlUI.current.statusUIs[playerId];
+        m_statusUI = StatusControlUI.current.statusUIs[playerId-1];
     }
     void Start()
     {
@@ -166,8 +171,8 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     }
     void Reset()
     {
-        if (team == 0) m_statusUI.Recover();
-        transform.position = MapController.current.positions[team*2+playerId].transform.position;
+        m_statusUI.Recover(GetComponent<SpriteRenderer>().color);
+        transform.position = MapController.current.positions[playerId-1].transform.position;
         SetHealth(Data.hp);
         SetHardSnowBall(Data.hardSnowBallNum);
         SetSoftSnowBall(Data.softSnowBallNum);
@@ -196,9 +201,10 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         {
             GiftFall();
         }
-        if (meleeDown)
+        if (meleeDown && Time.time - m_meleeTimeStamp >= meleeCD)
         {
-            
+            m_anim.SetTrigger("Pushing");           //@
+            m_meleeTimeStamp = Time.time;           //
             GameObject enemy = isEnemyNear;
             Debug.Log(enemy);
             if (enemy)
@@ -214,17 +220,26 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         if (m_throwDirection.magnitude != 0)   // 右摇杆显示轨迹
         {
             ShowTrajectory();
-            preparedToThrow = true;
+            preparedToThrow = true; 
+            // 控制角色方向
+            if (m_throwDirection.x > 0)                                         //  @
+                transform.localScale = new Vector3(-1, 1, 1);
+            else
+                transform.localScale = new Vector3(1, 1, 1);
         }
         else
         {
             tc.ClearTrack();    // 清除轨迹
         }
-        if (fire && preparedToThrow && Time.time - m_throwTimeStamp > throwCD && giftNum==0)   // 按RT发射雪球
+        if ((fire) && (preparedToThrow )&& (Time.time - m_throwTimeStamp > throwCD) && (giftNum==0))   // 按RT发射雪球
         {
-            throwSnowBall();
-            m_throwTimeStamp = Time.time;
-            preparedToThrow = false;
+            if (whichSnowball == 0 && hardSnowballNum > 0 || whichSnowball == 1 && softSnowballNum > 0)  // 雪球数量大于0      //  @
+            {
+                m_anim.SetTrigger("Attacking");
+                //throwSnowBall();
+                m_throwTimeStamp = Time.time;
+                preparedToThrow = false;
+            }
         }
         if (putIce)       // 按RB放置冰块
         {
@@ -234,14 +249,6 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         {
             whichSnowball = 1 - whichSnowball;
             tc.snowballObj = snowballList[whichSnowball];
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ChangeHealth(1);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            ChangeHealth(-1);
         }
     }
     public void BeginMake()
@@ -290,6 +297,14 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     private void Move()
     {
         Vector2 direction = new Vector2(vx, vy);//方向
+        m_anim.SetFloat("MoveSpeed", direction.magnitude);              // 移动动画      //  @
+        if (vx != 0)                                                     // 移动方向
+        {
+            if (vx < 0)
+                transform.localScale = new Vector3(-1, 1, 1);
+            else
+                transform.localScale = new Vector3(1, 1, 1);
+        }
         if (direction.magnitude > 0.1f)
         {
             direction = direction.normalized;
@@ -317,43 +332,40 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     private void SetHardSnowBall(int num)
     {
         hardSnowballNum = num;
-        if (team == 0) m_statusUI.SetHardBullet(num);
+        m_statusUI.SetHardBullet(num);
     }
     private void SetSoftSnowBall(int num)
     {
         softSnowballNum = num;
-        if (team == 0) m_statusUI.SetSoftBullet(num);
+        m_statusUI.SetSoftBullet(num);
     }
     private void SetHealth(int num)
     {
         hp = num;
         m_healthMoveUI.Set(num);
-        if (team == 0) m_statusUI.SetHealth(num);
+        m_statusUI.SetHealth(num);
     }
     private void ChangeHardSnowBall(int num)
     {
         hardSnowballNum += num;
-        if(team==0) m_statusUI.SetHardBullet(hardSnowballNum);
+        m_statusUI.SetHardBullet(hardSnowballNum);
     }
     private void ChangeSoftSnowBall(int num)
     {
         softSnowballNum += num;
-        if(team==0) m_statusUI.SetSoftBullet(softSnowballNum);
+        m_statusUI.SetSoftBullet(softSnowballNum);
     }
     private void ChangeHealth(int num)
     {
         hp += num;
         m_healthMoveUI.Set(hp);
-        if(team==0) m_statusUI.SetHealth(hp);
+        m_statusUI.SetHealth(hp);
         if (hp <= 0)
         {
             AddEnemyScore(15);
             GiftFall();
             gameObject.SetActive(false);
-            if (team == 0)
-            {
                 m_statusUI.GetToGrey();
-            }
             Invoke("Recover", 5f);
         }
     }
@@ -393,8 +405,12 @@ public class PlayerController : MonoBehaviour, IBeAttacked
         else if (whichSnowball == 1 && softSnowballNum > 0)
             ChangeSoftSnowBall(-1);
         else return;
+
+        AudioControl.current.throwBall.Play();
         GameObject obj = Instantiate(snowballList[whichSnowball], transform.position, Quaternion.identity);
         obj.GetComponent<SnowballController>().SetAttackPoint(m_attackPoint);
+
+        Debug.Log("th" + team);
         obj.GetComponent<SnowballController>().Shoot(team);
     }
 
@@ -429,7 +445,7 @@ public class PlayerController : MonoBehaviour, IBeAttacked
     }
     public void Recover()
     {
-        GameObject newPlayer = team==0? Data.Generate("Player",players):Data.Generate("Enemy",players);
+        GameObject newPlayer = Data.Generate("Player"+playerId.ToString(),players);
         newPlayer.GetComponent<PlayerController>().playerId = playerId;
         Destroy(gameObject);
     }

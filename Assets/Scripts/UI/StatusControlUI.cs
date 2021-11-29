@@ -9,10 +9,7 @@ public class StatusControlUI : MonoBehaviour//状态父节点UI
     private void Awake()
     {
         current = this;
-    }
-    private void Start()
-    {
-        for(int i=0;i<transform.childCount;i++)//清空原有statusui
+        for (int i = 0; i < transform.childCount; i++)//清空原有statusui
         {
             Destroy(transform.GetChild(i));
         }
@@ -25,9 +22,13 @@ public class StatusControlUI : MonoBehaviour//状态父节点UI
         {
             nums = 2;
         }
-        for (int i=0;i<nums;i++)
+        for (int i = 0; i < nums; i++)
         {
-            statusUIs.Add(Data.Generate("UIs/"+Data.uIIdToString[Data.UIId.status],gameObject).GetComponent<StatusUI>());
+            statusUIs.Add(Data.Generate("UIs/" + Data.uIIdToString[Data.UIId.status], gameObject).GetComponent<StatusUI>());
         }//根据玩家数添加statusui
+    }
+    private void Start()
+    {
+        
     }
 }

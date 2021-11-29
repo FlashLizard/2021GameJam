@@ -8,7 +8,7 @@ public class HealthMoveUI : MoveUI//移动血量UI
     private float m_delta=0.2f;                         //一格长度
     public void Awake()
     {
-        m_height += 0.15f;//避免与其他moveui重合
+        m_height += 0.95f;//避免与其他moveui重合
     }
     public static HealthMoveUI Generate(GameObject player)
     {

@@ -10,12 +10,12 @@ public class StatusUI : MonoBehaviour
     [SerializeField]
     private Color m_color;
     private int m_healthBegin=-1, m_hardBulletBegin=-1, m_softBulletBegin=-1;//œ»∑≈÷√”≤—©«Ú£¨∫Û∑≈÷√»Ì—©«Ú
-    public void Recover()
+    public void Recover(Color color)
     {
         Data.ClearChildren(m_health);
         Data.ClearChildren(m_bullets);
         m_healthBegin = m_hardBulletBegin = m_softBulletBegin = -1;
-        GetComponent<Image>().color = m_color;
+        GetComponent<Image>().color = color;
     }
     public void GetToGrey()
     {
@@ -62,6 +62,7 @@ public class StatusUI : MonoBehaviour
             while (num > 0)
             {
                 GameObject image=Data.Generate("UIs/" + Data.uIIdToString[id], values);
+                image.transform.localScale = new Vector3(1, 1);
                 image.transform.SetSiblingIndex(++begin);
                 num--;
             }

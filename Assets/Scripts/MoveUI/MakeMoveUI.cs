@@ -6,7 +6,7 @@ public class MakeMoveUI : MoveUI//ÖÆ×÷ÌõUI
 {
     private void Awake()
     {
-        m_height -= 0.2f;
+        m_height += 0.95f;
     }
     public static MakeMoveUI Generate(GameObject player)
     {

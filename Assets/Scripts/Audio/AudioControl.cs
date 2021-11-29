@@ -8,6 +8,8 @@ public class AudioControl : MonoBehaviour
     public static AudioControl current;//当前音量控制脚本
     [SerializeField]
     private AudioMixer m_audioMixer;
+    [SerializeField]
+    public AudioSource fallBall, throwBall;
     public float soundVolume, bgmVolume;
     private void Awake()
     {

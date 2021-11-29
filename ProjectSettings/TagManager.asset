@@ -14,7 +14,7 @@ TagManager:
   - Water
   - UI
   - Player
-  - Ice
+  - 
   - 
   - 
   - 
@@ -43,9 +43,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Ice
+    uniqueID: 438468989
+    locked: 0
   - name: Block
-    uniqueID: 3237080363
+    uniqueID: 2448407791
     locked: 0
   - name: Player
-    uniqueID: 1011312395
+    uniqueID: 180864435
     locked: 0

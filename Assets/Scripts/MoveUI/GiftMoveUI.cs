@@ -6,7 +6,7 @@ public class GiftMoveUI : MoveUI//“∆∂Ø¿ÒŒÔUI
 {
     public void Awake()
     {
-        m_height += 0.65f;
+        m_height += 4f;
     }
     public static GiftMoveUI Generate(GameObject player)
     {

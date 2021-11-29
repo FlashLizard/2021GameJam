@@ -47,6 +47,7 @@ public class SnowballController : MonoBehaviour
         }
         else if(collider2D.GetComponent<PlayerController>().team!=team)
         {
+            Debug.Log(collider2D.GetComponent<PlayerController>().team +" " +team);
             collider2D.GetComponent<IBeAttacked>().BeAttacked(attackDamage);
             DestroySelf();
         }
@@ -54,7 +55,8 @@ public class SnowballController : MonoBehaviour
 
     public void Shoot(int fromTeam)
     {
-        int team = fromTeam;
+        team = fromTeam;
+        Debug.Log("sh" + team);
         passTime = 0f;
         Invoke("DestroySelf", time);
     }
@@ -72,6 +74,7 @@ public class SnowballController : MonoBehaviour
 
     public void DestroySelf()
     {
+        AudioControl.current.fallBall.Play();
         Destroy(gameObject);
         GameObject hit = Instantiate(hitEffect, transform.position, Quaternion.identity);
         Destroy(hit, 0.1f);

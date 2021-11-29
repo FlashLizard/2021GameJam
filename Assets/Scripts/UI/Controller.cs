@@ -7,7 +7,8 @@ public class Controller : MonoBehaviour//¿ØÖÆ³¡¾°ÇĞ»»£¬ÔİÍ££¬ÉèÖÃuiµÄ³öÏÖ£¬³¡¾°¼
 {
     static public Controller current;//»ñÈ¡µ±Ç°½Å±¾
     [SerializeField]
-    public int time=5*60,playerNums=2;//µ¹¼ÆÊ±ÓëÍæ¼ÒÊıÁ¿
+    public int fixedTime = 20, fixedPlayerNums = 4;
+    public int time,playerNums;//µ¹¼ÆÊ±ÓëÍæ¼ÒÊıÁ¿
     [SerializeField]
     public Dictionary<Data.UIId, GameObject> uIs = new Dictionary<Data.UIId, GameObject>();//¸÷ÖÖĞèÒª»ñµÃµÄUI£¬±ÈÈçÔİÍ£²Ëµ¥
     public List<int> scores = new List<int>();                                              //µÃ·ÖĞÅÏ¢
@@ -62,8 +63,8 @@ public class Controller : MonoBehaviour//¿ØÖÆ³¡¾°ÇĞ»»£¬ÔİÍ££¬ÉèÖÃuiµÄ³öÏÖ£¬³¡¾°¼
     }                                                            //uiÍË³ö
     public void Reset()
     {
-        time = 5 * 60;
-        playerNums = 2;
+        time = fixedTime;
+        playerNums = fixedPlayerNums;
         m_uIStack.Clear();
         scores.Clear();
         Time.timeScale = 1;
